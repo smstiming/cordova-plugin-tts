@@ -1,10 +1,10 @@
 /*
     Cordova Text-to-Speech Plugin
     https://github.com/vilic/cordova-plugin-tts
- 
+
     by VILIC VANE
     https://github.com/vilic
- 
+
     MIT License
 */
 
@@ -28,22 +28,22 @@
         [self.commandDelegate sendPluginResult:result callbackId:callbackId];
         callbackId = nil;
     }
-    
+
     [[AVAudioSession sharedInstance] setActive:NO withOptions:0 error:nil];
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient 
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient
       withOptions: 0 error: nil];
     [[AVAudioSession sharedInstance] setActive:YES withOptions: 0 error:nil];
 }
 
 - (void)speak:(CDVInvokedUrlCommand*)command {
-    
+
     NSDictionary* options = [command.arguments objectAtIndex:0];
-    
+
     NSString* text = [options objectForKey:@"text"];
     NSString* locale = [options objectForKey:@"locale"];
     double rate = [[options objectForKey:@"rate"] doubleValue];
     NSString* category = [options objectForKey:@"category"];
-    
+
     [[AVAudioSession sharedInstance] setActive:NO withOptions:0 error:nil];
     if ([category isEqualToString:@"ambient"]) {
         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryAmbient
@@ -56,30 +56,25 @@
     if (callbackId) {
         lastCallbackId = callbackId;
     }
-    
+
     callbackId = command.callbackId;
-    
+
     [synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
-    
-    NSDictionary* options = [command.arguments objectAtIndex:0];
-    
-    NSString* text = [options objectForKey:@"text"];
-    NSString* locale = [options objectForKey:@"locale"];
-    double rate = [[options objectForKey:@"rate"] doubleValue];
+
     double pitch = [[options objectForKey:@"pitch"] doubleValue];
-    
+
     if (!locale || (id)locale == [NSNull null]) {
         locale = @"en-US";
     }
-    
+
     if (!rate) {
         rate = 1.0;
     }
-    
+
     if (!pitch) {
         pitch = 1.2;
     }
-    
+
     AVSpeechUtterance* utterance = [[AVSpeechUtterance new] initWithString:text];
     utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:locale];
     // Rate expression adjusted manually for a closer match to other platform.
